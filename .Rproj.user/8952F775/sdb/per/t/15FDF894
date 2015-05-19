@@ -1,0 +1,17 @@
+{
+    "contents" : "generatePlot1 <- function() {\n  #function for coursera course Exploratory Data Analysis, course project 2, to generate plot 1 which\n  #is described as follows \"Using the base plotting system, make a plot showing the total PM2.5 \n  #emission from all sources for each of the years 1999, 2002, 2005, and 2008. \"\n  \n  getData <- function() {\n    fileURL <- \"https://d396qusza40orc.cloudfront.net/exdata%2Fdata%2FNEI_data.zip\"\n    NEIfilename <- \"summarySCC_PM25.rds\"\n    SCCfilename <- \"Source_Classification_Code.rds\"\n    files <- c(NEIfilename, SCCfilename)\n    \n    #quality control, i would wrap this in trycatch for real code\n    for (file in files){\n      if (file %in% list.files()){\n        print(file)\n      } else {\n        message(\"it seems you are missing one or more file, pardon me while I download the .zip\")\n        download.file(\"https://d396qusza40orc.cloudfront.net/exdata%2Fdata%2FNEI_data.zip\", destfile = \"FNEI_data.zip\", method = \"curl\")\n        unzip(\"FNEI_data.zip\")\n      }\n    }\n  }\n  getData()\n  \n  #function to load required libs\n  loadPackages <- function() {\n    tryCatch(\n      {\n        library(dplyr)\n      },\n      error = function(cond) {\n        message(\"loading packages threw an error\")\n        message(\"here is the original error message: \")\n        message(cond)\n        stop(\"please install required packages with install.packages\", call. = F)\n      }\n    )\n  }\n  \n  #define datasets, load packages\n  loadPackages()\n  NEI <- readRDS(NEIfilename)\n  SCC <- readRDS(SCCfilename)\n  \n  #Going to have to perfom some sort of transform on Emissions data, fix x-axis, add trendline\n}\n",
+    "created" : 1431994396816.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2300275558",
+    "id" : "15FDF894",
+    "lastKnownWriteTime" : 1432007361,
+    "path" : "~/Programming/R_Progs/Exploratory_Data_Analysis/CourseProject2/plot1.R",
+    "project_path" : "plot1.R",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "source_on_save" : true,
+    "type" : "r_source"
+}
