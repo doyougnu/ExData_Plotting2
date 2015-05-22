@@ -1,9 +1,7 @@
 generatePlot4 <- function() {
   #function for coursera course Exploratory Data Analysis, course project 2, to generate plot 4 which
-  #is described as follows "Of the four types of sources indicated by the type 
-  #(point, nonpoint, onroad, nonroad) variable, which of these four sources have seen decreases in 
-  #emissions from 1999–2008 for Baltimore City? Which have seen increases in emissions from 
-  #1999–2008? Use the ggplot2 plotting system to make a plot answer this question.
+  #is described as follows "Across the United States, how have emissions from coal combustion-related
+  #sources changed from 1999–2008?
   
   getData <- function() {
     fileURL <- "https://d396qusza40orc.cloudfront.net/exdata%2Fdata%2FNEI_data.zip"
@@ -28,6 +26,7 @@ generatePlot4 <- function() {
     {
       library(dplyr)
       library(ggplot2)
+      library(gridExtra)
     },
     error = function(cond) {
       message("loading packages threw an error")
@@ -46,15 +45,35 @@ generatePlot4 <- function() {
   SCC <- SCC[grepl("combustion", tolower(SCC$SCC.Level.One)), ] #filter for Combustion
   SCC <- SCC[grepl("coal", tolower(SCC$SCC.Level.Three)), ] #filter for coal 
 
-  #plot a line plot with year as x-axis, facet by type, save it
-  myplot <- ggplot(NEI_filtered, aes(as.factor(year), Emissions)) + 
-    facet_wrap( ~ type) + 
-    geom_boxplot(aes(fill = type)) + 
-    scale_y_log10() +
-    ggtitle("Emissions, by type, from 1998-2008 in Baltimore City") +
-    xlab("Year")
-
-  #Bonus points for saving plot with ggplot2 lib
-  ggsave(filename = "plot3.png", plot = myplot, width = 7, height = 5)
-
+  #merge NEI and SCC post filter
+  df <- merge(SCC, NEI, by = "SCC")
+  df_sum <- df %>% 
+    group_by(year) %>% 
+    summarise(
+      Total_Emissions = sum(Emissions, na.rm = T)
+    )
+                      
+  
+  #Im using a combined approach here, I figured the viewer would want to know the distributions over each
+  #year as well as if the total emissions have decreased. Having one without the other doesn't really
+  #portray then entire story of this data, that is why I'm combining them into one plot. I figured faceting
+  #is legal so binding with the ggplot helper library gridExtra should be too
+  myplot_bar <- ggplot(df_sum, aes(x = factor(year), y = Total_Emissions, fill = factor(year))) + 
+    geom_bar(stat="identity") +
+    labs(title = "Coal Emissions from Combustion Sources, by FIPS, from 1998-2008", aesthetic = "custom") +
+    xlab("Year") + 
+    guides(fill = FALSE) #hide legend +
+    theme(plot.margin = unit(c(0.5, 0.5, 0.5, 1.25), units = "cm")) 
+  
+  myplot_count <- ggplot(df, aes(x = Emissions, fill = factor(year))) + 
+    geom_histogram(binwidth = 0.4) +
+    scale_x_log10() +
+    facet_wrap( ~ year, nrow = 1) +
+    guides(fill = FALSE) + #hide legend
+    theme(plot.margin = unit(c(0.5, 0.5, 0.5, 1.25), units = "cm"))
+  
+  #save plot
+  png("plot4.png", width = 680, height = 680)
+  grid.arrange(myplot_bar, myplot_count, nrow=2)
+  dev.off()
 }
