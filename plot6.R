@@ -73,17 +73,19 @@ generatePlot6 <- function() {
     labs(title = "Emissions from Motor Vehicle Sources in Baltimore and Los Angeles, from 1998-2008") +
     xlab("Year") + 
     guides(fill = FALSE) + #hide legend 
+    theme(strip.text.x = element_text(size = 13)) +
     theme(plot.margin = unit(c(0.5, 0.5, 0.5, 1.25), units = "cm")) 
   
   myplot_count <- ggplot(df, aes(x = Emissions, fill = factor(year))) + 
     geom_histogram(binwidth = 0.4) +
     scale_x_log10() +
     facet_grid(year ~ City, scales = "free_y") +
+    theme(strip.text.y = element_text(size = 13, angle = 90), strip.text.x = element_text(size = 13)) +
     guides(fill = FALSE) + #hide legend
     theme(plot.margin = unit(c(0.5, 0.5, 0.5, 1.25), units = "cm"))
   
   #save plot
-  png("plot6.png", width = 1080, height = 680)
+  png("plot6.png", width = 1080, height = 880)
   grid.arrange(myplot_bar, myplot_count, nrow=2)
   dev.off()
 }
