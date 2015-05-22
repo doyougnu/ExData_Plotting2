@@ -1,7 +1,9 @@
 generatePlot3 <- function() {
   #function for coursera course Exploratory Data Analysis, course project 2, to generate plot 2 which
-  #is described as follows "Using the base plotting system, make a plot showing the total PM2.5 
-  #emission from all sources for each of the years 1999, 2002, 2005, and 2008. "
+  #is described as follows "Of the four types of sources indicated by the type 
+  #(point, nonpoint, onroad, nonroad) variable, which of these four sources have seen decreases in 
+  #emissions from 1999–2008 for Baltimore City? Which have seen increases in emissions from 
+  #1999–2008? Use the ggplot2 plotting system to make a plot answer this question.
   
   getData <- function() {
     fileURL <- "https://d396qusza40orc.cloudfront.net/exdata%2Fdata%2FNEI_data.zip"
@@ -41,9 +43,6 @@ loadPackages()
 getData()
 NEI <- readRDS(NEIfilename)
 SCC <- readRDS(SCCfilename)
-
-#initialize PNG file
-png("plot3.png", width = 680, height = 480)
 
 #Get Emission totals for each year
 NEI_filtered <- NEI %>%

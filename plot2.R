@@ -1,7 +1,7 @@
 generatePlot2 <- function() {
   #function for coursera course Exploratory Data Analysis, course project 2, to generate plot 2 which
   #is described as follows "Using the base plotting system, make a plot showing the total PM2.5 
-  #emission from all sources for each of the years 1999, 2002, 2005, and 2008. "
+  #emission from all sources for each of the years 1999, 2002, 2005, and 2008 only from Baltimore "
   
   getData <- function() {
     fileURL <- "https://d396qusza40orc.cloudfront.net/exdata%2Fdata%2FNEI_data.zip"
