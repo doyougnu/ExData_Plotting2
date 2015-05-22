@@ -1,5 +1,5 @@
-generatePlot3 <- function() {
-  #function for coursera course Exploratory Data Analysis, course project 2, to generate plot 2 which
+generatePlot4 <- function() {
+  #function for coursera course Exploratory Data Analysis, course project 2, to generate plot 4 which
   #is described as follows "Of the four types of sources indicated by the type 
   #(point, nonpoint, onroad, nonroad) variable, which of these four sources have seen decreases in 
   #emissions from 1999–2008 for Baltimore City? Which have seen increases in emissions from 
@@ -24,7 +24,7 @@ generatePlot3 <- function() {
   
   #function to load required libs
   loadPackages <- function() {
-      tryCatch(
+    tryCatch(
     {
       library(dplyr)
       library(ggplot2)
@@ -42,27 +42,18 @@ generatePlot3 <- function() {
   getData()
   NEI <- readRDS(NEIfilename)
   SCC <- readRDS(SCCfilename)
-
-  #Get filtered dataset
-  NEI_filtered <- NEI %>%
-    group_by(year, fips, type) %>%
-    filter(fips == "24510") %>%
-    summarise(
-      Total_Emissions = sum(Emissions)
-    )
-
-  #plot a line plot with year as x-axis, Sum of emmisions by type on y axis
-  #I had made this a boxplot originally becase year is a categorical variable but in the end
-  #I thought that this was a cleaner "1 pager" kind of plot that tells the story quite well
-  #My only issue with this plot is the summary stat of sum, because I summed the emissions
-  #the viewer does not get a feel for the distribution on the data, as such, they cannot 
-  #see that the total number of emission sources rises over the years
-  myplot <- ggplot(NEI_filtered, aes(as.factor(year), Total_Emissions, group = type, color = type)) + 
-    geom_point() +
-    geom_smooth() +
-    ggtitle("Emissions, by type, from 1998-2008 in Baltimore City") +
-    xlab("Year") 
   
+  SCC <- SCC[grepl("combustion", tolower(SCC$SCC.Level.One)), ] #filter for Combustion
+  SCC <- SCC[grepl("coal", tolower(SCC$SCC.Level.Three)), ] #filter for coal 
+
+  #plot a line plot with year as x-axis, facet by type, save it
+  myplot <- ggplot(NEI_filtered, aes(as.factor(year), Emissions)) + 
+    facet_wrap( ~ type) + 
+    geom_boxplot(aes(fill = type)) + 
+    scale_y_log10() +
+    ggtitle("Emissions, by type, from 1998-2008 in Baltimore City") +
+    xlab("Year")
+
   #Bonus points for saving plot with ggplot2 lib
   ggsave(filename = "plot3.png", plot = myplot, width = 7, height = 5)
 
