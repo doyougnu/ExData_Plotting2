@@ -1,7 +1,6 @@
-generatePlot4 <- function() {
-  #function for coursera course Exploratory Data Analysis, course project 2, to generate plot 4 which
-  #is described as follows "Across the United States, how have emissions from coal combustion-related
-  #sources changed from 1999–2008?
+generatePlot5 <- function() {
+  #function for coursera course Exploratory Data Analysis, course project 2, to generate plot 5 which
+  #is described as follows "How have emissions from motor vehicle sources changed from 1999–2008 in Baltimore City?"
   
   getData <- function() {
     fileURL <- "https://d396qusza40orc.cloudfront.net/exdata%2Fdata%2FNEI_data.zip"
@@ -42,25 +41,25 @@ generatePlot4 <- function() {
   NEI <- readRDS(NEIfilename)
   SCC <- readRDS(SCCfilename)
   
-  SCC <- SCC[grepl("combustion", tolower(SCC$SCC.Level.One)), ] #filter for Combustion
-  SCC <- SCC[grepl("coal", tolower(SCC$SCC.Level.Three)), ] #filter for coal 
-
-  #merge NEI and SCC post filter
-  df <- merge(SCC, NEI, by = "SCC")
+  #Merge before filter, this would be faster to merge after filter but the code reads more linearly this way
+  SCC <- SCC[grepl("[Mm]obile | [Vvehicles]", SCC$EI.Sector), ] #filter matching on mobile vehicles
+  df <- merge(SCC, NEI, by = "SCC") 
+  
+  #filter for Baltimore only
   df_sum <- df %>% 
-    group_by(year) %>% 
+    group_by(year) %>%
+    filter(fips == "24510") %>%
     summarise(
       Total_Emissions = sum(Emissions, na.rm = T)
     )
-                      
   
-  #Im using a combined approach here, I figured the viewer would want to know the distributions over each
-  #year as well as if the total emissions have decreased. Having one without the other doesn't really
-  #portray then entire story of this data, that is why I'm combining them into one plot. I figured faceting
-  #is legal so binding with the ggplot helper library gridExtra should be too
+  df <- df %>% filter(fips == "24510")
+
+  #Im using the same combined approach here, this plot is the exact same code as plot4 just with different
+  #titles.
   myplot_bar <- ggplot(df_sum, aes(x = factor(year), y = Total_Emissions, fill = factor(year))) + 
     geom_bar(stat="identity") +
-    labs(title = "Coal Emissions from Combustion Sources, Country Wide, from 1998-2008") +
+    labs(title = "Emissions from Motor Vehicle Sources, from 1998-2008") +
     xlab("Year") + 
     guides(fill = FALSE) #hide legend +
     theme(plot.margin = unit(c(0.5, 0.5, 0.5, 1.25), units = "cm")) 
@@ -73,7 +72,7 @@ generatePlot4 <- function() {
     theme(plot.margin = unit(c(0.5, 0.5, 0.5, 1.25), units = "cm"))
   
   #save plot
-  png("plot4.png", width = 680, height = 680)
+  png("plot5.png", width = 680, height = 680)
   grid.arrange(myplot_bar, myplot_count, nrow=2)
   dev.off()
 }
