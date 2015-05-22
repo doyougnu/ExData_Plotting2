@@ -57,7 +57,8 @@ generatePlot3 <- function() {
     facet_wrap( ~ type) + 
     geom_boxplot(aes(fill = type)) + 
     scale_y_log10() +
-    ggtitle("Emissions, by type, from 1998-2008 in Baltimore City")
+    ggtitle("Emissions, by type, from 1998-2008 in Baltimore City") +
+    xlab("Year")
   
   #Bonus points for saving plot with ggplot2 lib
   ggsave(filename = "plot3.png", plot = myplot, width = 7, height = 5)
