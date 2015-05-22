@@ -19,7 +19,6 @@ generatePlot1 <- function() {
       } 
     }
   }
-  getData()
   
   #function to load required libs
   loadPackages <- function() {
@@ -37,12 +36,13 @@ generatePlot1 <- function() {
   }
   
   #define datasets, load packages
+  getData()
   loadPackages()
   NEI <- readRDS(NEIfilename)
   SCC <- readRDS(SCCfilename)
   
   #initialize PNG file
-  png("plot1.png", width = 480, height = 480)
+  png("plot1.png", width = 680, height = 480)
   
   #Get Emission totals for each year
   Emissions_Total <- NEI %>%

@@ -1,4 +1,4 @@
-generatePlot2 <- function() {
+generatePlot3 <- function() {
   #function for coursera course Exploratory Data Analysis, course project 2, to generate plot 2 which
   #is described as follows "Using the base plotting system, make a plot showing the total PM2.5 
   #emission from all sources for each of the years 1999, 2002, 2005, and 2008. "
@@ -25,6 +25,7 @@ generatePlot2 <- function() {
     tryCatch(
 {
   library(dplyr)
+  library(ggplot2)
 },
 error = function(cond) {
   message("loading packages threw an error")
@@ -42,31 +43,26 @@ NEI <- readRDS(NEIfilename)
 SCC <- readRDS(SCCfilename)
 
 #initialize PNG file
-png("plot2.png", width = 680, height = 480)
+png("plot3.png", width = 680, height = 480)
 
 #Get Emission totals for each year
-Emissions_Total <- NEI %>%
-  group_by(year, fips) %>%
-  filter(fips == "24510") %>%
-  summarise(
-    Total_Emissions = sum(Emissions)
-  )
+NEI_filtered <- NEI %>%
+  group_by(year, fips, type) %>%
+  filter(fips == "24510") #%>%
+  #summarise(
+  #  Total_Emissions = sum(Emissions)
+  #)
 
-#plot a line plot with year as x-axis
-options(scipen=5) #change the threshold for scientific notation in R
-par(mar = c(5, 7, 4, 2))
-with(Emissions_Total
-     , plot(Total_Emissions ~ year, pch = 19, xaxt="n", las = 1, ylab=""))
+#plot a line plot with year as x-axis, facet by type, save it
+#I went with a boxplot here because "year" is a categorical variable in this dataset, thus
+#making a line plot with a linear regression can be misleading because we have missing data in years
+#I also specifically didn't include a trend line for this boxplot because it could also be misleading
+#with this data, the y-axis is on a log scale
+myplot <- ggplot(NEI_filtered, aes(as.factor(year), Emissions)) + 
+  facet_wrap( ~ type) + 
+  geom_boxplot(aes(fill = type)) + 
+  scale_y_log10() 
+  
+ggsave(filename = "plot3.png", plot = myplot, width = 6, height = 4)
 
-#get axes to be meaningful
-axis(1, at = 1998:2008, labels = 1998:2008, las = 2)
-title(ylab = "Total Emissions", line = 5)
-title(main = "Total Emissions of PM2.5 by Year in Baltimore City")
-
-#add trend line
-model <- lm(Total_Emissions ~ year, Emissions_Total)
-abline(model,lwd = 2)
-
-#Close graphics device, save PNG
-dev.off()
 }
