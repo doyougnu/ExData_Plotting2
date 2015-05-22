@@ -62,7 +62,7 @@ generatePlot4 <- function() {
     geom_bar(stat="identity") +
     labs(title = "Coal Emissions from Combustion Sources, Country Wide, from 1998-2008") +
     xlab("Year") + 
-    guides(fill = FALSE) #hide legend +
+    guides(fill = FALSE) + #hide legend 
     theme(plot.margin = unit(c(0.5, 0.5, 0.5, 1.25), units = "cm")) 
   
   myplot_count <- ggplot(df, aes(x = Emissions, fill = factor(year))) + 
