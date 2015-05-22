@@ -24,44 +24,42 @@ generatePlot3 <- function() {
   
   #function to load required libs
   loadPackages <- function() {
-    tryCatch(
-{
-  library(dplyr)
-  library(ggplot2)
-},
-error = function(cond) {
-  message("loading packages threw an error")
-  message("here is the original error message: ")
-  message(cond)
-  stop("please install required packages with install.packages", call. = F)
-}
-    )
+      tryCatch(
+    {
+      library(dplyr)
+      library(ggplot2)
+    },
+    error = function(cond) {
+      message("loading packages threw an error")
+      message("here is the original error message: ")
+      message(cond)
+      stop("please install required packages with install.packages", call. = F)
+    })
   }
 
-#define datasets, load packages
-loadPackages()
-getData()
-NEI <- readRDS(NEIfilename)
-SCC <- readRDS(SCCfilename)
+  #define datasets, load packages
+  loadPackages()
+  getData()
+  NEI <- readRDS(NEIfilename)
+  SCC <- readRDS(SCCfilename)
 
-#Get Emission totals for each year
-NEI_filtered <- NEI %>%
-  group_by(year, fips, type) %>%
-  filter(fips == "24510") #%>%
-  #summarise(
-  #  Total_Emissions = sum(Emissions)
-  #)
+  #Get Emission totals for each year
+  NEI_filtered <- NEI %>%
+    group_by(year, fips, type) %>%
+    filter(fips == "24510") 
 
-#plot a line plot with year as x-axis, facet by type, save it
-#I went with a boxplot here because "year" is a categorical variable in this dataset, thus
-#making a line plot with a linear regression can be misleading because we have missing data in years
-#I also specifically didn't include a trend line for this boxplot because it could also be misleading
-#with this data, the y-axis is on a log scale
-myplot <- ggplot(NEI_filtered, aes(as.factor(year), Emissions)) + 
-  facet_wrap( ~ type) + 
-  geom_boxplot(aes(fill = type)) + 
-  scale_y_log10() 
+  #plot a line plot with year as x-axis, facet by type, save it
+  #I went with a boxplot here because "year" is a categorical variable in this dataset, thus
+  #making a line plot with a linear regression can be misleading because we have missing data in years
+  #I also specifically didn't include a trend line for this boxplot because it could also be misleading
+  #with this data, the y-axis is on a log scale
+  myplot <- ggplot(NEI_filtered, aes(as.factor(year), Emissions)) + 
+    facet_wrap( ~ type) + 
+    geom_boxplot(aes(fill = type)) + 
+    scale_y_log10() +
+    ggtitle("Emissions, by type, from 1998-2008 in Baltimore City")
   
-ggsave(filename = "plot3.png", plot = myplot, width = 6, height = 4)
+  #Bonus points for saving plot with ggplot2 lib
+  ggsave(filename = "plot3.png", plot = myplot, width = 7, height = 5)
 
 }
